@@ -1,12 +1,12 @@
-def divide(numerator, denominator):
+def verify_admin(password: str) -> bool:
     """
-    Divides two numbers. If the denominator is 0, returns None.
-    Otherwise, returns the result of the division.
+    Verifies if the provided password matches the admin secret.
+
+    Args:
+        password: The password string to check.
+
+    Returns:
+        True if the password matches 'admin_secret_123', False otherwise.
     """
-    if denominator == 0:
-        return None
-    try:
-        return numerator / denominator
-    except TypeError:
-        # Handle cases where numerator or denominator might not be numbers
-        return None
+    ADMIN_SECRET_PASSWORD = "admin_secret_123"
+    return password == ADMIN_SECRET_PASSWORD
