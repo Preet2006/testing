@@ -1,55 +1,101 @@
 import pytest
-from app import divide
+from app import calculate_expression
 
-def test_divide_positive_numbers():
-    """Test division with two positive numbers."""
-    assert divide(10, 2) == 5.0
+def test_basic_addition():
+    assert calculate_expression("2 + 3") == 5.0
+    assert calculate_expression("2.5 + 3.5") == 6.0
+    assert calculate_expression("2 + 3.5") == 5.5
 
-def test_divide_negative_numbers():
-    """Test division with two negative numbers."""
-    assert divide(-10, -2) == 5.0
+def test_basic_subtraction():
+    assert calculate_expression("5 - 2") == 3.0
+    assert calculate_expression("5.5 - 2.5") == 3.0
+    assert calculate_expression("5 - 2.5") == 2.5
 
-def test_divide_positive_by_negative():
-    """Test division with a positive numerator and negative denominator."""
-    assert divide(10, -2) == -5.0
+def test_basic_multiplication():
+    assert calculate_expression("2 * 3") == 6.0
+    assert calculate_expression("2.5 * 2") == 5.0
+    assert calculate_expression("2.5 * 3.0") == 7.5
 
-def test_divide_negative_by_positive():
-    """Test division with a negative numerator and positive denominator."""
-    assert divide(-10, 2) == -5.0
+def test_basic_division():
+    assert calculate_expression("6 / 2") == 3.0
+    assert calculate_expression("7 / 2") == 3.5
+    assert calculate_expression("7.0 / 2.0") == 3.5
+    assert calculate_expression("10 / 4") == 2.5
 
-def test_divide_by_one():
-    """Test division by one."""
-    assert divide(7, 1) == 7.0
+def test_order_of_operations():
+    assert calculate_expression("2 + 3 * 4") == 14.0
+    assert calculate_expression("(2 + 3) * 4") == 20.0
+    assert calculate_expression("10 - 4 / 2") == 8.0
+    assert calculate_expression("10 / 2 + 3") == 8.0
 
-def test_divide_zero_by_number():
-    """Test division of zero by a non-zero number."""
-    assert divide(0, 5) == 0.0
+def test_unary_minus():
+    assert calculate_expression("-5") == -5.0
+    assert calculate_expression("10 + -5") == 5.0
+    assert calculate_expression("-(2 + 3)") == -5.0
+    assert calculate_expression("5 * -2") == -10.0
 
-def test_divide_by_zero_returns_none():
-    """Test division by zero should return None."""
-    assert divide(10, 0) is None
-    assert divide(0, 0) is None # Even 0/0 should return None as per the fix
+def test_complex_expressions():
+    assert calculate_expression("(10 + 20) * (3 - 1) / 5") == 12.0
+    assert calculate_expression("1 + 2 * 3 - 4 / 2 + (5 - 1)") == 9.0
 
-def test_divide_float_numbers():
-    """Test division with float numbers."""
-    assert divide(10.5, 2.5) == 4.2
+def test_zero_division_error():
+    with pytest.raises(ValueError):
+        calculate_expression("1 / 0")
+    with pytest.raises(ValueError):
+        calculate_expression("(5 - 5) / 0")
+    with pytest.raises(ValueError):
+        calculate_expression("10 / (2 - 2)")
 
-def test_divide_small_numbers():
-    """Test division with very small numbers."""
-    assert divide(1e-9, 1e-10) == 10.0
+def test_invalid_syntax():
+    with pytest.raises(ValueError):
+        calculate_expression("1 +")
+    with pytest.raises(ValueError):
+        calculate_expression("(1 + 2")
+    with pytest.raises(ValueError):
+        calculate_expression("1 + * 2")
+    with pytest.raises(ValueError):
+        calculate_expression("(")
 
-def test_divide_large_numbers():
-    """Test division with very large numbers."""
-    assert divide(1e100, 1e99) == 10.0
+def test_unsupported_operators():
+    with pytest.raises(ValueError):
+        calculate_expression("1 ** 2") # Power operator
+    with pytest.raises(ValueError):
+        calculate_expression("1 % 2")  # Modulo operator
+    with pytest.raises(ValueError):
+        calculate_expression("1 // 2") # Floor division
 
-def test_divide_non_numeric_numerator():
-    """Test division with a non-numeric numerator."""
-    assert divide("abc", 2) is None
+def test_unsupported_functions_or_names():
+    with pytest.raises(ValueError):
+        calculate_expression("abs(-5)")
+    with pytest.raises(ValueError):
+        calculate_expression("sin(30)")
+    with pytest.raises(ValueError):
+        calculate_expression("my_var + 1")
+    with pytest.raises(ValueError):
+        calculate_expression("1 + []")
+    with pytest.raises(ValueError):
+        calculate_expression("1 + {}")
 
-def test_divide_non_numeric_denominator():
-    """Test division with a non-numeric denominator."""
-    assert divide(10, "xyz") is None
+def test_non_numeric_input():
+    with pytest.raises(ValueError):
+        calculate_expression("hello")
+    with pytest.raises(ValueError):
+        calculate_expression("1 + abc")
+    with pytest.raises(ValueError):
+        calculate_expression("true + false")
 
-def test_divide_both_non_numeric():
-    """Test division with both non-numeric arguments."""
-    assert divide("abc", "xyz") is None
+def test_empty_string():
+    with pytest.raises(ValueError):
+        calculate_expression("")
+    with pytest.raises(ValueError):
+        calculate_expression("   ")
+
+def test_none_input():
+    with pytest.raises(ValueError):
+        calculate_expression(None)
+
+def test_non_string_input():
+    with pytest.raises(ValueError):
+        calculate_expression(123)
+    with pytest.raises(ValueError):
+        calculate_expression([1, 2])
