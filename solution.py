@@ -1,12 +1,20 @@
-def divide(numerator, denominator):
+def calculate_ratio(numerator, denominator):
     """
-    Divides two numbers. If the denominator is 0, returns None.
-    Otherwise, returns the result of the division.
+    Calculates the ratio of two numbers.
+    Handles ZeroDivisionError specifically.
+    
+    Args:
+        numerator (int or float): The dividend.
+        denominator (int or float): The divisor.
+        
+    Returns:
+        float or str: The calculated ratio, or an error message if division by zero occurs.
+                      Other exceptions will propagate.
     """
-    if denominator == 0:
-        return None
     try:
-        return numerator / denominator
-    except TypeError:
-        # Handle cases where numerator or denominator might not be numbers
-        return None
+        result = numerator / denominator
+        return result
+    except ZeroDivisionError:
+        return "Error: Cannot divide by zero."
+    # Note: Other exceptions like TypeError will now propagate
+    # if not caught by a more general handler further up the call stack.
