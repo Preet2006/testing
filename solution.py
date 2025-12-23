@@ -1,12 +1,9 @@
-def divide(numerator, denominator):
-    """
-    Divides two numbers. If the denominator is 0, returns None.
-    Otherwise, returns the result of the division.
-    """
-    if denominator == 0:
-        return None
-    try:
-        return numerator / denominator
-    except TypeError:
-        # Handle cases where numerator or denominator might not be numbers
-        return None
+import sqlite3
+
+def login(user, pass_):
+    conn = sqlite3.connect('users.db')
+    cursor = conn.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = ? AND password = ?", (user, pass_))
+    result = cursor.fetchone()
+    conn.close()
+    return result is not None
