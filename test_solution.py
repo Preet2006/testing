@@ -1,55 +1,61 @@
-import pytest
-from app import divide
+import logging
+from app import process_data
 
-def test_divide_positive_numbers():
-    """Test division with two positive numbers."""
-    assert divide(10, 2) == 5.0
+def test_process_data_negative_value_logs_error(caplog):
+    """Test that a negative value logs an ERROR and returns False."""
+    # Set caplog level to capture ERROR messages
+    caplog.set_level(logging.ERROR)
+    
+    result = process_data(-5)
+    
+    assert not result
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "ERROR"
+    assert "Data processing failed: Value -5 is negative." in caplog.text
 
-def test_divide_negative_numbers():
-    """Test division with two negative numbers."""
-    assert divide(-10, -2) == 5.0
+def test_process_data_invalid_type_logs_error(caplog):
+    """Test that an invalid type logs an ERROR and returns False."""
+    caplog.set_level(logging.ERROR)
+    
+    result = process_data("abc")
+    
+    assert not result
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "ERROR"
+    assert "Invalid input type: <class 'str'>. Expected int or float." in caplog.text
 
-def test_divide_positive_by_negative():
-    """Test division with a positive numerator and negative denominator."""
-    assert divide(10, -2) == -5.0
+def test_process_data_positive_value_logs_info(caplog):
+    """Test that a positive value logs INFO and returns True."""
+    # Set caplog level to capture INFO messages
+    caplog.set_level(logging.INFO)
+    
+    result = process_data(10)
+    
+    assert result
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "INFO"
+    assert "Successfully processed data with value: 10" in caplog.text
+    # Ensure no ERROR logs were generated
+    assert not any(r.levelname == "ERROR" for r in caplog.records)
 
-def test_divide_negative_by_positive():
-    """Test division with a negative numerator and positive denominator."""
-    assert divide(-10, 2) == -5.0
+def test_process_data_zero_value_logs_info(caplog):
+    """Test that a zero value logs INFO and returns True."""
+    caplog.set_level(logging.INFO)
+    
+    result = process_data(0)
+    
+    assert result
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "INFO"
+    assert "Successfully processed data with value: 0" in caplog.text
 
-def test_divide_by_one():
-    """Test division by one."""
-    assert divide(7, 1) == 7.0
-
-def test_divide_zero_by_number():
-    """Test division of zero by a non-zero number."""
-    assert divide(0, 5) == 0.0
-
-def test_divide_by_zero_returns_none():
-    """Test division by zero should return None."""
-    assert divide(10, 0) is None
-    assert divide(0, 0) is None # Even 0/0 should return None as per the fix
-
-def test_divide_float_numbers():
-    """Test division with float numbers."""
-    assert divide(10.5, 2.5) == 4.2
-
-def test_divide_small_numbers():
-    """Test division with very small numbers."""
-    assert divide(1e-9, 1e-10) == 10.0
-
-def test_divide_large_numbers():
-    """Test division with very large numbers."""
-    assert divide(1e100, 1e99) == 10.0
-
-def test_divide_non_numeric_numerator():
-    """Test division with a non-numeric numerator."""
-    assert divide("abc", 2) is None
-
-def test_divide_non_numeric_denominator():
-    """Test division with a non-numeric denominator."""
-    assert divide(10, "xyz") is None
-
-def test_divide_both_non_numeric():
-    """Test division with both non-numeric arguments."""
-    assert divide("abc", "xyz") is None
+def test_process_data_float_value_logs_info(caplog):
+    """Test that a float value logs INFO and returns True."""
+    caplog.set_level(logging.INFO)
+    
+    result = process_data(3.14)
+    
+    assert result
+    assert len(caplog.records) == 1
+    assert caplog.records[0].levelname == "INFO"
+    assert "Successfully processed data with value: 3.14" in caplog.text
