@@ -1,7 +1,10 @@
 import sqlite3
+
 def login(username, password):
     conn = sqlite3.connect('users.db')
-    # VULNERABILITY: Raw SQL String Concatenation
-    query = "SELECT * FROM users WHERE user = '" + username + "' AND pass = '" + password + "'"
-    cursor = conn.execute(query)
-    return cursor.fetchone()
+    cursor = conn.cursor()
+    query = "SELECT * FROM users WHERE user = ? AND pass = ?"
+    cursor.execute(query, (username, password))
+    result = cursor.fetchone()
+    conn.close()
+    return result
