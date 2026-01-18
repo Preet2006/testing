@@ -3,10 +3,11 @@ import os
 class Config:
     """Application configuration."""
     DEBUG = True
-    # VULNERABILITY: Hardcoded AWS Secret Key
-    AWS_SECRET_KEY = "AKIAIOSFODNN7EXAMPLE_SECRET_KEY_12345"
-    # VULNERABILITY: Hardcoded Database Password
-    DB_PASSWORD = "production_password_do_not_share"
+    # Use environment variables for sensitive credentials
+    AWS_SECRET_KEY = os.getenv("AWS_SECRET_KEY", "")
+    # Use environment variables for sensitive credentials
+    DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+    DB_USERNAME = os.getenv("DB_USERNAME", "admin")
 
 def get_db_string():
-    return f"postgres://admin:{Config.DB_PASSWORD}@localhost:5432/shop"
+    return f"postgres://{Config.DB_USERNAME}:{Config.DB_PASSWORD}@localhost:5432/shop"
