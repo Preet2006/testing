@@ -1,5 +1,6 @@
 import sys
 import os
+import subprocess
 
 class BackupService:
     def __init__(self, backup_dir="/tmp/backups"):
@@ -11,13 +12,11 @@ class BackupService:
     def create_backup(self, filename):
         print(f"[*] Starting backup for: {filename}")
         
-        # VULNERABILITY: Command Injection
-        # The agent can inject: "file; echo HACKED"
-        command = f"tar -czf {self.backup_dir}/archive.tar.gz {filename}"
+        # Use subprocess with list, never shell=True to prevent command injection
+        command = ["tar", "-czf", f"{self.backup_dir}/archive.tar.gz", filename]
         
-        print(f"DEBUG: Executing shell command: {command}")
-        # os.system allows shell injection
-        os.system(command)
+        print(f"DEBUG: Executing shell command: {' '.join(command)}")
+        subprocess.run(command, capture_output=True, text=True)
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
