@@ -5,10 +5,8 @@ def get_user_details():
     conn = sqlite3.connect('users.db')
     cursor = conn.cursor()
     
-    # VULNERABLE: String formatting for SQL queries
-    query = f"SELECT * FROM users WHERE id = '{user_id}'"
-    
-    cursor.execute(query)
+    query = "SELECT * FROM users WHERE id = ?"
+    cursor.execute(query, (user_id,))
     print(cursor.fetchone())
 
 if __name__ == "__main__":
